@@ -59,7 +59,7 @@
 
     <div style="width: 240px;">
         <!-- List group -->
-        <div class="list-group" id="myList" role="tablist">
+        <div class="list-group" id="drawabeCategory" role="tablist" style="margin-bottom: 100px;">
             <a class="list-group-item list-group-item-action active" data-toggle="list" href="#all" role="tab">all</a>
             <a class="list-group-item list-group-item-action" data-toggle="list" href="#home" role="tab">Home</a>
             <a class="list-group-item list-group-item-action" data-toggle="list" href="#profile" role="tab">Profile</a>
@@ -92,7 +92,7 @@
 
                         <div style="width :100%;height: 120px;display: table-cell;vertical-align: middle;">
 
-                            <img src="http://old.bz55.com/uploads/allimg/150210/139-150210134411-50.jpg"
+                            <img src="http://h.hiphotos.baidu.com/image/pic/item/2cf5e0fe9925bc31b3e6ab0a52df8db1ca1370ed.jpg"
                                  style="max-width: 100%;max-height: 100%;">
 
                         </div>
@@ -108,7 +108,7 @@
 
                         <div style="width :200px;height: 120px;display: table-cell;vertical-align: middle;font-size: 12px;">
 
-                            <img src="http://old.bz55.com/uploads/allimg/150210/139-150210134411-50.jpg"
+                            <img src="http://h.hiphotos.baidu.com/image/pic/item/2cf5e0fe9925bc31b3e6ab0a52df8db1ca1370ed.jpg"
                                  style="max-width: 100%;max-height: 100%;">
 
                         </div>
@@ -154,6 +154,8 @@
 <script type="text/javascript">
 
     var baseUrl = "http://localhost:8080/image/";
+
+    var projectDrawable;
 
     function req(reqEntity, success, fail) {
 
@@ -202,6 +204,7 @@
 
     function reqProImageList(proId) {
 
+        clearCategoryAndDrawables();
 
         req({url: baseUrl + "project/listImage?proId=" + proId}, function (result) {
 
@@ -219,7 +222,43 @@
 
     function showImagesOfProject(result) {
 
-        var drawablesList = result.categories[0].drawablesList;
+        projectDrawable = result;
+
+        var categories = result.categories;
+
+        if (categories == null) {
+            return;
+        }
+
+        var categoryLength = categories.length;
+
+        clearCategoryAndDrawables();
+
+        for (var i = 0; i < categoryLength; i++) {
+
+            var category = categories[i];
+
+            var category_item = createOneCategory(i, category);
+
+            $("#drawabeCategory").append(category_item);
+
+        }
+
+        if(categoryLength > 0) {
+
+            showImagesOfCategory(0);
+
+        }
+
+    }
+
+    function showImagesOfCategory(categiryIndex) {
+
+        if (projectDrawable == null) {
+            return;
+        }
+
+        var drawablesList = projectDrawable.categories[categiryIndex].drawablesList;
 
         var drawablesListLength = drawablesList.length;
 
@@ -234,6 +273,33 @@
             $("#div_img_container").append(div_carousel);
 
         }
+
+        $('html,body').animate({scrollTop: '0px'}, 800);
+
+    }
+
+    function clearCategoryAndDrawables() {
+        $("#div_img_container")[0].innerHTML = "";
+        $("#drawabeCategory")[0].innerHTML = "";
+    }
+
+    function createOneCategory(categoryIndex, category) {
+
+        var a = document.createElement("a")
+
+        if (categoryIndex == 0) {
+            a.setAttribute("class", "list-group-item list-group-item-action active");
+        } else {
+            a.setAttribute("class", "list-group-item list-group-item-action");
+        }
+        a.setAttribute("data-toggle", "list");
+        a.setAttribute("href", "#");
+        a.setAttribute("role", "tab");
+        a.setAttribute("onclick", "showImagesOfCategory('" + categoryIndex + "')");
+
+        a.innerText = category.name;
+
+        return a;
 
     }
 
@@ -304,7 +370,7 @@
             var div_carousel_inner_item_desc = document.createElement("div"); // ==========================1.2.*.2
             div_carousel_inner_item_desc.setAttribute("style", "height: 60px;width: 100%;font-size: 14px;text-align: left;padding: 4px;")
 
-            div_carousel_inner_item_desc.innerText = "folder：" + drawables[i].drawableName;
+            div_carousel_inner_item_desc.innerText = drawables[i].drawableName;
 
             div_carousel_inner_item.appendChild(div_carousel_inner_item_desc); // ==========================1.2.*.2 -> ==========================1.2.*
 
@@ -351,7 +417,7 @@
         var h4_drawable_desc = document.createElement("h4");                  // ==========================2
         h4_drawable_desc.setAttribute("style", "width: 100%;height: 60px;margin-top: 60px;text-align: left;padding: 4px;font-size: 14px;background: rgba(160,160,160,0.4);");
         h4_drawable_desc.setAttribute("class", "card-title");
-        h4_drawable_desc.innerText = "name：" + drawablesEntity.drawableName;
+        h4_drawable_desc.innerText = drawablesEntity.drawableName;
 
         div_carousel_container.appendChild(h4_drawable_desc);                  // ==========================2 -> 0
 
